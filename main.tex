@@ -1,0 +1,453 @@
+\documentclass[9pt]{extarticle}
+\usepackage{amsmath}
+\usepackage[table,x11names,dvipsnames,table]{xcolor}
+\usepackage{authblk}
+\usepackage{subcaption,booktabs}
+\usepackage{graphicx}
+\usepackage[nolist,nohyperlinks]{acronym}
+\usepackage[superscript]{cite}
+\usepackage{tabularx}
+\usepackage{float}
+\usepackage[group-separator={,}]{siunitx}
+\usepackage{geometry}
+\usepackage{listings}
+
+% Adjust margins using the geometry package
+\geometry{
+  a4paper,
+  left=25mm,  % Set left margin
+  right=25mm, % Set right margin
+  top=25mm,   % Set top margin
+  bottom=25mm % Set bottom margin
+}
+
+%\linenumbers %%% Turn on line numbers here
+
+\renewcommand{\familydefault}{\sfdefault}
+
+
+%%%% Comment out the below for the other title option
+\makeatletter
+\def\@maketitle{
+\raggedright
+\newpage
+  \noindent
+  \vspace{0cm}
+  \let \footnote \thanks
+    {\hskip -0.4em \huge \textbf{{\@title}} \par}
+    \vskip 1.5em
+    {\large
+      \lineskip .5em
+      \begin{tabular}[t]{l}
+      \raggedright
+        \@author
+      \end{tabular}\par}
+    \vskip 1em
+  \par
+  \vskip 1.5em
+  }
+\makeatother
+
+\begin{document}
+
+\title{Root-finding with Bisection and Newton's Method}
+
+\author{Thomas Vo \\ MTH437 Project Root-finding\\ University at Buffalo}
+\maketitle
+
+\section*{Introduction}
+This report presents the methods for finding roots of functions using the Bisection Method and Newton's Method. This will demonstrate the methods with test problems to multiple different tolerances. 
+
+\section{Bisection Method}
+
+The Bisection Method is a numerical technique used to find a root of a continuous function with two known values of opposite signs. The general idea of the Bisection Method is to repeatedly narrow down (bisecting) the interval that contains the root until the interval is within a certain tolerance. While the Bisection method is a simple and reliable way to estimate the root, it is relatively slow compared to other methods like Newton's Method.
+
+\subsection{Formula and Procedure}
+\begin{itemize}
+    \item Find two points, $a$ and $b$, where $a$ is smaller than $b$, and the product of $f(a)$ and $f(b)$ is negative.
+    \item Calculate the midpoint:
+    \begin{center}
+        \( c = \frac{a + b}{2} \)
+    \end{center}
+    \item Evaluate the function $f(c)$:
+    \begin{itemize}
+        \item If $f(c) = 0$, then $c$ is the root of the function; the method stops.
+        \item If $f(c) \neq 0$, decide which interval contains the root:
+        \begin{itemize}
+            \item If $f(a) \times f(c) < 0$, the root lies in the interval $[a, c]$. Set $b = c$.
+            \item If $f(b) \times f(c) < 0$, the root lies in the interval $[c, b]$. Set $a = c$.
+        \end{itemize}
+    \end{itemize} 
+    \item Narrow down the interval:
+    \begin{itemize}
+        \item Replace the interval $[a, b]$ with the new interval $[a, c]$ or $[c, b]$ depending on where the sign change occurs.
+        \item Repeat the process until the interval is within the specified tolerance $\epsilon$.
+    \end{itemize}
+    \item Convergence:
+    \begin{itemize}
+        \item The method converges to a root because each iteration of the method halves the interval length, eventually converging to a single point within the tolerance.
+    \end{itemize}
+\end{itemize}
+\subsection{Example}
+
+\begin{center}
+   $f(x) = x^2 - 2$
+\end{center}
+\begin{itemize}
+    \item Step 1: Choose an interval $[a,b]$:
+        \begin{itemize}
+            \item For this function, we can choose the interval $[1, 2]$ since
+            \begin{center}
+            $f(1) = 1^2 - 2 = -1$
+
+            $f(2) = 2^2 - 2 = 2$
+            \end{center}
+            \item Since $f(1)$ and $f(2)$ have opposite signs (-1 and 2), the root lies within the interval $[1, 2]$.
+        \end{itemize}
+    \item Step 2: Calculate midpoint:
+        \begin{itemize}
+            \item Compute the midpoint $c$ of the interval $[a,b]$ for the first iteration
+            \begin{center}
+                \( c = \frac{a + b}{2} \)
+
+                \( c = \frac{1 + 2}{2} = 1.5 \)
+            \end{center}
+        \end{itemize}
+        \item Step 3: Evaluate the function at the midpoint
+            \begin{itemize}
+                \item Calculate $f(c)$:
+                \begin{center}
+                    \(f(1.5) = (1.5)^2 - 2 = 0.25\)
+                \end{center}
+            \item Determine which interval contains the root:
+                \begin{itemize}
+                    \item Since $f(1)$ and $f(1.5)$ have opposite signs (-1 and 0.25), the root lies within $[1, 1.5]$.
+                \end{itemize}
+            \end{itemize}
+    \item Step 4: Narrow the Interval:
+        \begin{itemize}
+            \item Set new interval $[1, 1.5]$
+            \item Repeat steps 2 and 3 for the new interval until it is close enough to 0 within the specified tolerance.
+        \end{itemize}
+    \item Step 5: Determine the approximate root:
+        \begin{itemize}
+            \item Once the interval is close enough to 0 within tolerance, the midpoint $c$ of the last interval is taken as the approximate root.
+        \end{itemize}
+    \end{itemize}
+    
+\begin{table}[h!]
+\centering
+\begin{tabular}{|c|c|c|c|c|}
+\hline
+Iteration \(n\) & Interval \([a, b]\) & \(x_n\)        & \(f(x_n)\)       & Relative Error \(e_n = \frac{|x_n - \sqrt{2}|}{|\sqrt{2}|}\) \\ \hline
+1               & [1, 2]              & 1.5            & 0.25             & 0.0607                                              \\ \hline
+2               & [1, 1.5]            & 1.25           & -0.4375          & 0.1145                                              \\ \hline
+3               & [1.25, 1.5]         & 1.375          & -0.109375        & 0.0277                                              \\ \hline
+4               & [1.375, 1.5]        & 1.4375         & 0.06640625       & 0.0160                                              \\ \hline
+5               & [1.375, 1.4375]     & 1.40625        & -0.005859375     & 0.00139                                             \\ \hline
+6               & [1.40625, 1.4375]   & 1.421875       & 0.027587890625   & 0.0098                                              \\ \hline
+7               & [1.40625, 1.421875] & 1.4140625      & -0.00042724609375 & 0.000302                                            \\ \hline
+8               & [1.4140625, 1.421875] & 1.41796875   & 0.013092041015625 & 0.00499                                             \\ \hline
+9               & [1.4140625, 1.41796875] & 1.416015625 & 0.0063323974609375 & 0.00241                                            \\ \hline
+10              & [1.4140625, 1.416015625] & 1.4150390625 & 0.0029506683349609 & 0.00130                                           \\ \hline
+\end{tabular}
+\caption{10 Iterations of the Bisection method for \( f(x) = x^2 - 2 \) with the root \( r = \sqrt{2} \approx 1.414213 \).}
+\label{tab:bisection_iterations_sqrt2}
+\end{table}
+
+\newpage
+\section{Newton's Method}
+
+Newton's Method is another numerical technique used to approximate a root of a function. But instead of bisecting the interval like the bisection method, this method uses an initial guess and adjusts this guess using the function's derivative. This method is faster than the bisection method as it converges quadratically for each iteration.
+
+\subsection{Formula and Procedure}
+
+\begin{itemize}
+    \item Step 1: Initial Guess    
+        \begin{itemize}
+            \item Start with an initial guess \(x_0\), preferably close to the actual root.
+        \end{itemize}
+
+    \item Step 2: Evaluate the function and its derivative
+        \begin{itemize}
+            \item Compute the function \(f(x_0)\) and \(f'(x_0)\) at the initial guess \(x_0\)
+        \end{itemize}
+
+    \item Step 3: Apply Newton's Formula
+
+        \[
+        x_1 = x_0 - \frac{f(x_0)}{f'(x_0)}
+        \]
+        \begin{itemize}
+            \item Ensure \(f'(x_0) \neq 0\) since division by zero will cause failure.
+        \end{itemize}
+
+    \item Step 4: Check for Convergence
+        \begin{itemize}
+            \item Check if the method has converged by verifying whether:
+            \[
+            |x_{n+1} - x_n| < \text{tolerance}
+            \]
+        \end{itemize}
+
+    \item Step 5: Repeat the process
+        \begin{itemize}
+            \item If not converged, set \(x_n = x_{n+1}\) and repeat steps 2-4.
+        \end{itemize}
+\end{itemize}
+
+\subsection{Example: Applying Newton's Method to \( f(x) = x^3 - 6 \)}
+
+\begin{itemize}
+    \item \textbf{Step 1:} Initial guess: \(x_0 = 1.8203125\)
+    \begin{itemize}
+        \item The Bisection method is used to find an initial guess for Newton's method. We choose the interval \([1, 2]\), since:
+\[
+f(1) = 1^3 - 6 = -5, \quad f(2) = 2^3 - 6 = 2
+\]
+The root lies between 1 and 2. Using Bisection with a tolerance of \( 10^{-2} \), we obtain the initial guess:
+\[
+x_0 = 1.8203125
+\]
+    \end{itemize} 
+    \item \textbf{Step 2:} Evaluate the function and its derivative:
+    \begin{itemize}
+        \item \(f(x) = x^3 - 6\)
+        \item \(f'(x) = 3x^2\)
+        \item Using the Bisection method with tolerance \(10^{-2}\), we found that:
+        \[
+        f(1.8203125) = (1.8203125)^3 - 6 = 0.03227
+        \]
+        \[
+        f'(1.8203125) = 3(1.8203125)^2 = 9.93727
+        \]
+    \end{itemize}
+    
+    \item \textbf{Step 3:} Apply Newton's Method:
+    \begin{itemize}
+        \item First iteration:
+        \[
+        x_1 = 1.8203125 - \frac{0.03227}{9.93727} = 1.8203125 - 0.00325 = 1.8170625
+        \]
+        \item Second iteration:
+        \[
+        x_2 = 1.8170625 - \frac{-0.000314}{9.89776} = 1.8170625 + 0.00003173 = 1.8170942
+        \]
+        \item Third iteration:
+        \[
+        x_3 = 1.8170942 - \frac{1.8170942^3 - 6}{3 \cdot (1.8170942)^2}
+        \]
+        \[
+        x_3 = 1.8170942 - \frac{0.0000009}{9.89783} \approx 1.8170942 - 0.000000091 = 1.8170941
+        \]
+        \item Fourth iteration:
+        \[
+        x_4 = 1.8170941 - \frac{1.8170941^3 - 6}{3 \cdot (1.8170941)^2}
+        \]
+        \[
+        x_4 = 1.8170941 - \frac{0.000000001}{9.89783} \approx 1.8170941 - 0.0000000001 = 1.8170941
+        \]
+    \end{itemize}
+\end{itemize}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|c|c|c|c|}
+\hline
+Iteration \(n\) & \(x_n\)           & Practical Error Estimator \( \frac{|x_n - x_{n-1}|}{|x_{n-1}|} \) \\ \hline
+0               & 1.8203125         & —                                                      \\ \hline
+1               & 1.8170625         & 0.00178                                                \\ \hline
+2               & 1.8170942         & 0.0000175                                              \\ \hline
+3               & 1.8170941         & \( 5.52 \times 10^{-8} \)                              \\ \hline
+4               & 1.8170941         & \( < 10^{-12} \)                                       \\ \hline
+\end{tabular}
+\caption{Iterations of Newton's Method for \( f(x) = x^3 - 6 \)}
+\label{tab:newtons_method_iterations}
+\end{table}
+
+\newpage
+\section{Cubic Root of $f(x) = sin(x) - x$}
+The goal is to find the known root r = 0 for the function f(x) sin(x) - x using the Bisection and Newton's method and a tolerance of $\epsilon = 10^{-10}$ to get an accurate approximation of the root.
+
+\subsection{Bisection Method}
+\begin{itemize}
+    \item Bisection method of $f(x) = sin(x) - x$
+    \item Process of applying Bisection method
+    \begin{itemize}
+        \item First we need to choose an interval [a,b] such that f(a) x f(b) < 0
+        \item We can choose the interval [-2,2] because 
+        \begin{itemize}
+            \item $f(-2) = sin(-2)-(-2) = -0.0907$
+            \item $f(2) = sin(2) -(2) = 1.0907$
+            \item Since the product of both $f(-2)$ and $f(2) < 0$
+            \item We can use that to compute the starting midpoint and continue until we reach an interval less than or equal to our tolerance of $10^{-10}$
+        \end{itemize}
+        \item After applying the Bisection method to $f(x) = sin(x) - x$ with a tolerance of $\epsilon = 10^{-10}$, the method then converges to $r \approx 0.0$ after roughly 36 iterations
+    \end{itemize}
+\end{itemize}
+\subsection{Newton's Method}
+\begin{itemize}
+    \item Newton's method of $f(x) = sin(x) - x$
+    \item If we were to use the root approximation we found using the Bisection Method then it would make Newton's Method ineffective because the derivative of $sin(x) - x$ is $cos(x) -1 1$ and $f'(0.0) = cos(0) - 1 = 0$
+    \item Division by 0 would be undefined because it leads to a contradiction 
+    \item To mitigate this issue we would choose a $x_0$ that is close to zero but not exactly $0$
+    \item This issue shows the importance of making sure the initial guess is non-zero
+    \item If we were to choose $x_0 = .5$ instead of our result from the Bisection Method then it would take 3 iterations to converge to our tolerance of $10^{-10}$
+    \begin{itemize}
+        \item $f(x) = sin(x) - x$ and $\epsilon = 10^{-10}$ and $x_0 = 0.5$
+        \item $f(x) = sin(x) -x$
+        \item $f'(x) = cos(x) - 1$
+        \item $f(.5) = -0.0206$
+        \item $f'(.5) = - 0.1224$
+        \item $x_1 = 0.5 - \frac{-.0206}{-0.1224} \approx 0.5 - 0.2688 \approx .2032$
+        \item $x_2 = .2032 - \frac{-0.0013}{-0.0206} \approx 0.2032 - 0.0630 \approx 0.0051$
+        \item $x_3 = 0.0051 - \frac{-1.360 \cdot 10^{-6}}{-1.311 \cdot10^{-5}} 
+        \\ \approx 0.0051 - 0.000104 \approx 2.36 \cdot 10^{-6} 
+        \\ = 0.00000236$
+        
+    \end{itemize}
+\end{itemize}
+
+\subsection{Error Magnification Factor}
+\begin{itemize}
+    \item The error magnification factor is a measure of how much the error in the input data will be amplified. Input data such as our interval $[a.b]$ in the bisection method or our initial guess $x_0$ for Newton's Method. In root-finding methods like Bisection and Newtons method, we can calculate how errors in our approximations will either increase or decrease as we iterate through the methods.
+    \begin{itemize}
+        \item \textbf{Bisection Method}
+        \begin{itemize}
+            \item In the Bisection Method, the error magnification is constant, the approximate root error is cut in half with each iteration.
+            \item This method while quite slow in convergence, it is highly predictable and reliable for finding the approximate root.
+            \item In this experiment we chose an interval of $[-2,2]$. Using Bisection method, it will take 36 iterations to achieve a tolerance of $10^{-10}$.
+            \item In the first iteration, the relative error was 4 at the interval $[-2,2]$, and for the second iteration that error is cut in half at 1 with the interval $[0,2]$, and in the third iteration it was 0.5.
+            \item The bisection method is predictable and reliable but slow with the constant error magnification factor of 2, since it is cutting the error in half with each iteration.
+        \end{itemize}
+        \item \textbf{Newton's Method}
+        \begin{itemize}
+            \item Newton's method is known for its quadratic convergence, which means the error decreases rapidly once the approximation is close to the root. But unlike the bisection method, Newton's method is highly dependent on the initial guess, if the initial guess isn't close to the root or if $f'(x_0) = 0$, the method could not converge quickly or completely fail.
+            \item Some issues that could arise if using Newton's Method would be division by zero or if $f'(x_n)$ is close to zero but not exactly zero, the next iteration could be inaccurate and cause divergence due to limitations of the computer.
+            \item For example, in our experiment of the function $f(x = sin(x) - x$, it has a known root of 0 and the derivative of the function is $f'(x) = cos(x) - 1$. If we input 0 as $x$ into the derivative, the method would fail because $f'(0) = cos(0) - 1 = 0$ results in division by zero.
+            \item The error magnification of Newton's method is dependent on the initial guess, it can be well conditioned near the root but could be poorly conditioned if the derivative is close to zero or exactly zero.
+            \item For $sin(x) - x$, after the second iteration the magnification factor was $\approx 1.33$ and after the third iteration it was $\approx 2$
+        \end{itemize}
+    \end{itemize}
+    \item \textbf{Error mitigation}
+        \begin{itemize}
+            \item To handle certain situations such as the one we have encountered for $f(x) = sin(x) - x$ using Newton's Method, we can avoid starting at a point where $f'(x_0) = 0$
+            \item Another way to handle this would to just use a different method such as the Bisection method
+        \end{itemize}
+\end{itemize}
+\section{Conclusion}
+ In this report, two root-finding methods were experimented with, Bisection and Newton's Method. The Bisection Method was used for the equation $(fx) = x^2 - 2$ to approximate $\sqrt{2}$, the results showed a slow but reliable convergence rate. Newton's Method was applied to the function $f(x) = x^3 - 6$, which demonstrated the quadratic convergence of Newton's Method. A discovery of some issues that could arise with using Newton's method were found, such as when $f'(x) = 0$ the method would fail as it would have division by zero. Also if the initial guess was far off from the actual root, the convergence rate would suffer. This concluded that Newton's method's error magnification factor was dependent on the input and requires a close first approximation. Overall this experiment shows the importance of choosing the right method for your desired problem. While the Bisection Method is reliable it comes at a cost of speed, and Newton's method is faster but requires an initial guess that is sufficiently close to the actual root and that its derivative $\neq 0$. Bisection method has a time complexity of $O(logn)$ but also depends on the length of the of the interval and Newton's Method is $O(n)$ as long as the initial guess is close to the root.
+
+\clearpage
+\begin{center}
+    \title{Python code for Bisection Method}
+\end{center}
+
+\begin{lstlisting}
+def bisection_method():
+    
+    # get the function input as a string
+    func_str = input("Enter a function of x (e.g., 'x**2 - 2'): ")
+    func_str = func_str.replace('^', '**')  # replace ^ with ** 
+
+    # evaluates the function
+    def f(x):
+        return eval(func_str)  
+
+    # convert string inputs to float
+    print("\nPick an a and b for your first interval\nso that f(a) * f(b) is negative")
+    a = float(input("a: "))
+    b = float(input("b: "))
+
+    # check for valid inputs from user
+    while f(a) * f(b) >= 0:
+        print("Invalid interval. The product f(a) * f(b) is not negative.")
+        print("Pick a new 'a' and 'b' where f(a) * f(b) is negative.")
+        a = float(input("a: "))
+        b = float(input("b: "))
+
+    print(f"\nYour interval is: [{a}, {b}]")
+    initial_interval = f"[{a}, {b}]"
+
+    # ask for tolerance input
+    tolerance = float(input("\nWhat tolerance exponent of 10? (e.g., '8' for 10**-8): "))
+    tolerance_input = 10**(-tolerance)
+
+    # initialize iteration count
+    iteration = 0
+    
+    # bisection method loop for while b-a is greater than the inputted tolerance
+    while b - a > tolerance_input:
+        c = (a + b) / 2
+        if f(c) * f(a) < 0:
+            b = c
+        else:
+            a = c
+        iteration += 1
+    
+    # print out the root, interval and the number if iterations
+    print(f"Root of {func_str} is: {c} along the interval {initial_interval}")
+    print(f"This took {iteration} iterations to meet the tolerance of 10e-{int(tolerance)}")
+
+bisection_method()
+\end{lstlisting}
+
+\clearpage
+\begin{center}
+    \title{Python code for Newton's Method}
+    
+\end{center}
+
+\begin{lstlisting}
+def newtons_method():
+    
+    # user inputted equation, derivative, intial guess and tolerance 
+    func_str = input("Enter a function of x (e.g., 'x**3 - 6'): ")
+    func_str = func_str.replace('^', '**')  # convert ^ to ** 
+
+    derivative_str = input("Enter the derivative of the function (e.g., '3*x**2'): ")
+    derivative_str = derivative_str.replace('^', '**')
+
+    # define f(x) and f'(x) 
+    def f(x):
+        return eval(func_str) 
+
+    def f_prime(x):
+        return eval(derivative_str)
+
+    # get the initial guess and tolerance from the user
+    x0 = float(input("Enter the initial guess (x0): "))
+    tol_exp = float(input("Enter the tolerance exponent (e.g., 12 for 1e-12): "))
+    tol = 10**(-tol_exp)  # convert tolerance exponent
+
+    # set variables for Newton's method
+    x_n = x0
+    iterations = []
+    iteration = 0
+
+    # Newton's method loop
+    while True:
+        
+        # Newton's update formula
+        x_n1 = x_n - f(x_n) / f_prime(x_n)
+        error_estimator = abs((x_n1 - x_n) / x_n) if x_n != 0 else float('inf')
+
+        # set the iteration number, current guess, and error estimator
+        iterations.append((iteration, x_n1, error_estimator))
+
+        # check for convergence
+        if abs(x_n1 - x_n) < tol:
+            break
+
+        # update for the next iteration
+        x_n = x_n1
+        iteration += 1
+
+    # print the final result, number of iterations, and tolerance to user
+    print(f"\nFinal root found: {x_n1}")
+    print(f"Number of iterations: {len(iterations)}")
+    print(f"Tolerance used: 10^-{int(tol_exp)}")
+
+newtons_method()
+\end{lstlisting}
+\end{document}

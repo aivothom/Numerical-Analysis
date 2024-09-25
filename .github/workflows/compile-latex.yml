@@ -1,9 +1,9 @@
-name: Compile LaTeX Document
+name: Compile and Commit LaTeX PDF
 
 on:
   push:
     branches:
-      - main  # or any other branch
+      - main  # Replace with the appropriate branch you're using
 
 jobs:
   build:
@@ -13,14 +13,24 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v2
 
-    - name: Install minimal TeX Live
-      run: sudo apt-get install -y texlive-latex-base texlive-latex-recommended texlive-latex-extra texlive-fonts-recommended
+    - name: Cache TeX Live packages
+      uses: actions/cache@v3
+      with:
+        path: /usr/local/texlive
+        key: ${{ runner.os }}-texlive
+        restore-keys: |
+          ${{ runner.os }}-texlive
+
+    - name: Install TeX Live and necessary packages
+      run: sudo apt-get install -y texlive-latex-base texlive-latex-recommended texlive-latex-extra texlive-fonts-recommended texlive-science
 
     - name: Compile LaTeX
-      run: pdflatex main.tex  # Replace 'main.tex' with the actual name of your LaTeX file
+      run: pdflatex main.tex  # Replace 'main.tex' with your actual LaTeX file name
 
-    - name: Upload PDF artifact
-      uses: actions/upload-artifact@v3
-      with:
-        name: LaTeX PDF
-        path: main.pdf  # Ensure this matches the output file from pdflatex
+    - name: Commit PDF to repository
+      run: |
+        git config --local user.name "github-actions[bot]"
+        git config --local user.email "github-actions[bot]@users.noreply.github.com"
+        git add main.pdf  # Replace 'main.pdf' with the actual output file name
+        git commit -m "Add compiled PDF"
+        git push origin main

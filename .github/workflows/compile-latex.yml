@@ -3,16 +3,18 @@ name: Compile and Commit LaTeX PDF
 on:
   push:
     branches:
-      - main  # Replace with the appropriate branch you're using
+      - main  # This triggers the workflow on pushes to the 'main' branch; change if needed
 
 jobs:
   build:
     runs-on: ubuntu-latest
     
     steps:
+    # Step 1: Checkout the repository
     - name: Checkout repository
       uses: actions/checkout@v2
 
+    # Step 2: Cache TeX Live to speed up subsequent builds
     - name: Cache TeX Live packages
       uses: actions/cache@v3
       with:
@@ -21,16 +23,21 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-texlive
 
+    # Step 3: Install TeX Live and necessary LaTeX packages
     - name: Install TeX Live and necessary packages
       run: sudo apt-get install -y texlive-latex-base texlive-latex-recommended texlive-latex-extra texlive-fonts-recommended texlive-science
 
+    # Step 4: Compile LaTeX document
     - name: Compile LaTeX
-      run: pdflatex main.tex  # Replace 'main.tex' with your actual LaTeX file name
+      run: pdflatex main.tex  # Replace 'main.tex' with the name of your LaTeX file
 
+    # Step 5: Commit the resulting PDF back to the repository
     - name: Commit PDF to repository
+      env:
+        GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}  # The token stored in GitHub Secrets
       run: |
         git config --local user.name "github-actions[bot]"
         git config --local user.email "github-actions[bot]@users.noreply.github.com"
         git add main.pdf  # Replace 'main.pdf' with the actual output file name
         git commit -m "Add compiled PDF"
-        git push origin main
+        git push https://x-access-token:${{ secrets.GH_TOKEN }}@github.com/${{ github.repository }}.git HEAD:main

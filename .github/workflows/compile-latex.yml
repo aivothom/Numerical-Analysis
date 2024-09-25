@@ -3,32 +3,24 @@ name: Compile LaTeX Document
 on:
   push:
     branches:
-      - main  # Change this to the appropriate branch if needed
+      - main  # or any other branch
 
 jobs:
   build:
     runs-on: ubuntu-latest
-
+    
     steps:
     - name: Checkout repository
       uses: actions/checkout@v2
-
-    - name: Cache TeX Live packages
-      uses: actions/cache@v3
-      with:
-        path: /usr/local/texlive
-        key: ${{ runner.os }}-texlive
-        restore-keys: |
-          ${{ runner.os }}-texlive
 
     - name: Install minimal TeX Live
       run: sudo apt-get install -y texlive-latex-base texlive-latex-recommended texlive-latex-extra texlive-fonts-recommended
 
     - name: Compile LaTeX
-      run: pdflatex main.tex  # Replace 'main.tex' with your actual LaTeX file name
+      run: pdflatex main.tex  # Replace 'main.tex' with the actual name of your LaTeX file
 
     - name: Upload PDF artifact
       uses: actions/upload-artifact@v3
       with:
         name: LaTeX PDF
-        path: main.pdf  # Replace with the actual name of your generated PDF
+        path: main.pdf  # Ensure this matches the output file from pdflatex

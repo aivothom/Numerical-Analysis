@@ -17,7 +17,7 @@ jobs:
       run: sudo apt-get install -y texlive-full
 
     - name: Compile LaTeX
-      run: pdflatex yourfile.tex  # Replace 'yourfile.tex' with your actual .tex file name
+      run: pdflatex main.tex  # Replace 'yourfile.tex' with your actual .tex file name
 
     - name: Upload PDF artifact
       uses: actions/upload-artifact@v3  # Updated from v2 to v3

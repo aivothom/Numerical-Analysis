@@ -3,24 +3,32 @@ name: Compile LaTeX Document
 on:
   push:
     branches:
-      - main  # or whichever branch you want to trigger the action
+      - main  # Change this to the appropriate branch if needed
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    
+
     steps:
     - name: Checkout repository
       uses: actions/checkout@v2
 
-    - name: Install TeX Live
-      run: sudo apt-get install -y texlive-full
+    - name: Cache TeX Live packages
+      uses: actions/cache@v3
+      with:
+        path: /usr/local/texlive
+        key: ${{ runner.os }}-texlive
+        restore-keys: |
+          ${{ runner.os }}-texlive
+
+    - name: Install minimal TeX Live
+      run: sudo apt-get install -y texlive-latex-base texlive-latex-recommended texlive-latex-extra texlive-fonts-recommended
 
     - name: Compile LaTeX
-      run: pdflatex main.tex  # Replace 'yourfile.tex' with your actual .tex file name
+      run: pdflatex main.tex  # Replace 'main.tex' with your actual LaTeX file name
 
     - name: Upload PDF artifact
-      uses: actions/upload-artifact@v3  # Updated from v2 to v3
+      uses: actions/upload-artifact@v3
       with:
         name: LaTeX PDF
-        path: yourfile.pdf  # Replace 'yourfile.pdf' with the name of your output PDF file
+        path: main.pdf  # Replace with the actual name of your generated PDF
